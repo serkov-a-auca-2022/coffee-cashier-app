@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.coffee_cashier_app">
+
+    <!-- Internet permission for network calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Coffee Cashier App"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.CoffeeCashierApp">
+
+        <!-- If your Activities are in subpackages, use the full name: -->
+
+        <activity
+            android:name="com.example.coffee_cashier_app.ui.orderdetail.OrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.coffee_cashier_app.ui.createorder.CreateOrderActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.coffee_cashier_app.ui.history.HistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.coffee_cashier_app.ui.main.MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.coffee_cashier_app.ui.login.LoginActivity"
+            android:exported="true">
+
+            <!-- This is your LAUNCHER activity, so we need the intent-filter: -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
