@@ -1,46 +1,60 @@
 package com.example.coffee_cashier_app.network
 
 
-import com.example.coffee_cashier_app.model.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.*
-import retrofit2.Call  // если используем Call для асинхронности
-import kotlinx.coroutines.Deferred  // можно использовать Coroutines
+import com.example.coffee_cashier_app.model.Item
+import com.example.coffee_cashier_app.model.OrderResponseDto
+import com.example.coffee_cashier_app.model.User
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
-// DTO для создания нового заказа
+data class LoginRequest(val username: String, val password: String)
+data class Cashier(val id: Long, val username: String, val fullName: String)
+
+// DTO для создания заказа
+
 data class CreateOrderRequest(
-    val items: List<OrderItem>  // список позиций (товар + количество)
+    val items: List<OrderItemDto>,
+    val userId: Int? = null,
+    val userQrCode: String? = null,
+    val pointsToUse: Int? = null,
+    val useFreeDrink: Boolean? = null,
+    val status: String? = null
 )
-
-// DTO для завершения заказа
-data class CompleteOrderRequest(
-    val userId: Int,
-    val pointsUsed: Int,
-    val freeDrinksUsed: Int
-)
-
-// Интерфейс API для запросов к серверу
+// Теперь «финиш» и «отмена» без тела (POST)
 interface ApiService {
+    // кассир
+    @POST("cashiers/login")
+    suspend fun login(@Body request: LoginRequest): Response<Cashier>
 
+    // товары
+    @GET("products")
+    suspend fun getProducts(): List<Item>
+
+    // активные заказы (CONFIRMED)
     @GET("orders/active")
-    suspend fun getActiveOrders(): List<Order>
+    suspend fun getActiveOrders(): List<OrderResponseDto>
 
+    // история по кассиру / для всех завершённых + отменённых
+    // пока нет серверного эндпоинта — оставляю тот, что был
     @GET("orders/history")
-    suspend fun getOrderHistory(): List<Order>
+    suspend fun getOrderHistory(): List<OrderResponseDto>
 
+    // создать или обновить (по новой логике бэка)
     @POST("orders")
-    suspend fun createOrder(@Body order: CreateOrderRequest): Order
+    suspend fun createOrder(@Body request: CreateOrderRequest): OrderResponseDto
 
-    @PUT("orders/{id}/complete")
-    suspend fun completeOrder(
-        @Path("id") orderId: Int,
-        @Body completeRequest: CompleteOrderRequest
-    ): Order
+    // завершить заказ (POST /orders/{id}/finish)
+    @POST("orders/{id}/finish")
+    suspend fun finishOrder(@Path("id") orderId: Int): OrderResponseDto
 
-    @PUT("orders/{id}/cancel")
-    suspend fun cancelOrder(@Path("id") orderId: Int): Order
+    // отменить заказ (POST /orders/{id}/cancel)
+    @POST("orders/{id}/cancel")
+    suspend fun cancelOrder(@Path("id") orderId: Int): OrderResponseDto
 
+    // привязать клиента по QR
     @GET("users/qr/{qrCode}")
-    suspend fun getUserByQr(@Path("qrCode") qrCode: String): User
+    suspend fun getUserByQr(@Path("qrCode") qr: String): User
 }

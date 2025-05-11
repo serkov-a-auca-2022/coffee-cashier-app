@@ -5,17 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.coffee_cashier_app.model.Order
+import com.example.coffee_cashier_app.R
+import com.example.coffee_cashier_app.model.OrderResponseDto
 
-class OrdersAdapter(private val onOrderClick: (Order) -> Unit)
+class OrdersAdapter(private val onOrderClick: (OrderResponseDto) -> Unit)
     : RecyclerView.Adapter<OrdersAdapter.OrderViewHolder>() {
 
-    private var orders: List<Order> = emptyList()
+    private var orders: List<OrderResponseDto> = emptyList()
 
     inner class OrderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textDateTime: TextView = itemView.findViewById(R.id.textDateTime)
+        val textDateTime: TextView     = itemView.findViewById(R.id.textDateTime)
         val textItemsSummary: TextView = itemView.findViewById(R.id.textItemsSummary)
-        val textTotal: TextView = itemView.findViewById(R.id.textTotal)
+        val textTotal: TextView        = itemView.findViewById(R.id.textSum)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
@@ -26,20 +27,20 @@ class OrdersAdapter(private val onOrderClick: (Order) -> Unit)
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val order = orders[position]
-        // Bind order data to views
-        holder.textDateTime.text = order.dateTime
-        holder.textItemsSummary.text = if (order.items.isNotEmpty()) {
-            val totalCount = order.items.sumOf { it.quantity }
-            val firstItemName = order.items[0].item.name
+        holder.textDateTime.text = order.orderDate
+        val itemsSummary = if (order.items.isNotEmpty()) {
+            val totalCount   = order.items.sumOf { it.quantity }
+            val firstName    = order.items[0].name
             if (order.items.size == 1) {
-                "${totalCount}× $firstItemName"
+                "${totalCount}× $firstName"
             } else {
-                "${totalCount} товар(ов): $firstItemName и др."
+                "${totalCount} товар(ов): $firstName и др."
             }
         } else {
             "Нет товаров"
         }
-        holder.textTotal.text = "${order.total} сом"
+        holder.textItemsSummary.text = itemsSummary
+        holder.textTotal.text        = "${order.totalAmount} сом"
         holder.itemView.setOnClickListener {
             onOrderClick(order)
         }
@@ -47,7 +48,7 @@ class OrdersAdapter(private val onOrderClick: (Order) -> Unit)
 
     override fun getItemCount(): Int = orders.size
 
-    fun setOrders(newOrders: List<Order>) {
+    fun setOrders(newOrders: List<OrderResponseDto>) {
         orders = newOrders
         notifyDataSetChanged()
     }

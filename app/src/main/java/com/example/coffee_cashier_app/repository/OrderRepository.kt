@@ -1,40 +1,29 @@
 package com.example.coffee_cashier_app.repository
 
-import com.example.coffee_cashier_app.model.*
-import com.example.coffee_cashier_app.network.*
+import com.example.coffee_cashier_app.model.OrderResponseDto
+import com.example.coffee_cashier_app.network.ApiClient
+import com.example.coffee_cashier_app.network.CreateOrderRequest
+import com.example.coffee_cashier_app.network.OrderItemDto
 
-class OrderRepository {
-    private val api = ApiClient.apiService  // экземпляр API Service
+object OrderRepository {
+    private val api = ApiClient.apiService
 
-    // Получить список активных заказов (с сервера)
-    suspend fun getActiveOrders(): List<Order> {
-        return api.getActiveOrders()
+    suspend fun getActiveOrders(): List<OrderResponseDto> =
+        api.getActiveOrders()
+
+    suspend fun getOrderHistory(): List<OrderResponseDto> =
+        api.getOrderHistory()
+
+    suspend fun createOrder(items: List<OrderItemDto>): OrderResponseDto {
+        val req = CreateOrderRequest(items = items)
+        return api.createOrder(req)
     }
 
-    // Получить историю заказов (все завершённые и отменённые)
-    suspend fun getOrderHistory(): List<Order> {
-        return api.getOrderHistory()
-    }
+    suspend fun finishOrder(orderId: Int): OrderResponseDto =
+        api.finishOrder(orderId)
 
-    // Создать новый заказ
-    suspend fun createOrder(items: List<OrderItem>): Order {
-        val request = CreateOrderRequest(items)
-        return api.createOrder(request)
-    }
+    suspend fun cancelOrder(orderId: Int): OrderResponseDto =
+        api.cancelOrder(orderId)
 
-    // Завершить заказ (назначить пользователя и применить бонусы)
-    suspend fun completeOrder(orderId: Int, userId: Int, pointsUsed: Int, freeDrinksUsed: Int): Order {
-        val request = CompleteOrderRequest(userId, pointsUsed, freeDrinksUsed)
-        return api.completeOrder(orderId, request)
-    }
-
-    // Отменить заказ
-    suspend fun cancelOrder(orderId: Int): Order {
-        return api.cancelOrder(orderId)
-    }
-
-    // Найти пользователя по QR-коду
-    suspend fun getUserByQr(qrCode: String): User {
-        return api.getUserByQr(qrCode)
-    }
+    suspend fun getUserByQr(qrCode: String) = api.getUserByQr(qrCode)
 }

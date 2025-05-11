@@ -30,13 +30,13 @@
         android:gravity="center_horizontal">
 
         <Button
-            android:id="@+id/btnCreateOrder"
+            android:id="@+id/buttonCreateOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Создать заказ" />
 
         <Button
-            android:id="@+id/btnHistory"
+            android:id="@+id/buttonHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="История заказов"
@@ -45,7 +45,7 @@
 
     <!-- Индикатор загрузки, по умолчанию скрыт -->
     <ProgressBar
-        android:id="@+id/progressBarLoading"
+        android:id="@+id/progressLoading"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

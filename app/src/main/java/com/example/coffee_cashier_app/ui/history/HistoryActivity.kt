@@ -1,47 +1,62 @@
 package com.example.coffee_cashier_app.ui.history
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.coffee_cashier_app.data.Repository
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.coffee_cashier_app.databinding.ActivityHistoryBinding
 import com.example.coffee_cashier_app.model.Order
-import com.example.coffee_cashier_app.ui.detail.OrderDetailActivity
-import com.example.coffee_cashier_app.ui.main.OrdersAdapter
-import kotlinx.android.synthetic.main.activity_history.*
+import com.example.coffee_cashier_app.repository.OrderRepository
 import kotlinx.coroutines.launch
 
 class HistoryActivity : AppCompatActivity() {
 
-    private lateinit var ordersAdapter: OrdersAdapter
+    private lateinit var binding: ActivityHistoryBinding
+    private val fullList: MutableList<Order> = mutableListOf()
+    // HistoryAdapter – убедитесь, что он реализован (см. OrdersAdapter в MainActivity как пример)
+    private val adapter = HistoryAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_history)
+        binding = ActivityHistoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        ordersAdapter = OrdersAdapter { order ->
-            val intent = Intent(this, OrderDetailActivity::class.java)
-            intent.putExtra("order", order)
-            startActivity(intent)
-        }
-        recyclerHistory.adapter = ordersAdapter
+        binding.recyclerHistory.layoutManager = LinearLayoutManager(this)
+        binding.recyclerHistory.adapter = adapter
 
-        progressHistory.visibility = View.VISIBLE
+        val statuses = listOf("Все", "Завершённые", "Отменённые")
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statuses)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerFilter.adapter = spinnerAdapter
+
+        binding.spinnerFilter.setSelection(0)
+
+        binding.spinnerFilter.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                // Здесь реализуйте фильтрацию списка по статусу (если нужно)
+                adapter.updateList(fullList)
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
+
+        loadHistory()
+    }
+
+    private fun loadHistory() {
         lifecycleScope.launch {
             try {
-                val historyList: List<Order> = Repository.getOrderHistory()
-                ordersAdapter.setOrders(historyList)
+                val orders = OrderRepository.getOrderHistory()
+                fullList.clear()
+                fullList.addAll(orders)
+                adapter.updateList(fullList)
             } catch (e: Exception) {
-                Toast.makeText(
-                    this@HistoryActivity,
-                    "Ошибка загрузки истории",
-                    Toast.LENGTH_LONG
-                ).show()
-            } finally {
-                progressHistory.visibility = View.GONE
+                Toast.makeText(this@HistoryActivity, "Ошибка истории: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

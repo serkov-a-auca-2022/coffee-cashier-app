@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textDate"
+            android:id="@+id/textDateTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,7 +33,7 @@
 
     <!-- Состав заказа -->
     <TextView
-        android:id="@+id/textComposition"
+        android:id="@+id/textItemsSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Americano x1, Latte x2"

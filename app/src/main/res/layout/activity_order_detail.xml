@@ -10,6 +10,34 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Дата и время заказа -->
+        <TextView
+            android:id="@+id/textDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Дата заказа: "
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Состав заказа -->
+        <TextView
+            android:id="@+id/textItemsSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Состав заказа: "
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Итоговая сумма -->
+        <TextView
+            android:id="@+id/textTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="К оплате: "
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
         <!-- Состав заказа -->
         <TextView
             android:layout_width="match_parent"
@@ -38,7 +66,7 @@
             android:id="@+id/textSumDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0 ₽"
+            android:text="0 сом"
             android:textSize="16sp"
             android:layout_marginBottom="16dp"/>
 

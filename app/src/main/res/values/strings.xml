@@ -1,3 +1,3 @@
 <resources>
-    <string name="app_name">coffee-cashier-app</string>
+    <string name="spinner_prompt">coffee-cashier-app</string>
 </resources>

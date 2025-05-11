@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Массив для спиннера в HistoryActivity -->
+    <string-array name="history_filter_options">
+        <item>Все</item>
+        <item>Завершённые</item>
+        <item>Отменённые</item>
+    </string-array>
+</resources>

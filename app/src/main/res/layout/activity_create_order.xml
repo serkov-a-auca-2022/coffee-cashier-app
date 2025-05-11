@@ -3,37 +3,74 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
-    <!-- Список меню (товары для заказа) -->
+    <!-- 1) Список категорий -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerMenu"
+        android:id="@+id/rvCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"/>
+
+    <!-- 2) Список продуктов (скрыт до выбора категории) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProducts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <!-- 3) Корзина -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Корзина:"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp"/>
+        android:layout_weight="1"/>
 
-    <!-- Нижняя панель: сумма и кнопка сохранения -->
+    <!-- Прогресс-бар при отправке -->
+    <ProgressBar
+        android:id="@+id/progressCreating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Итог -->
+    <TextView
+        android:id="@+id/tvTotalSum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Итого: 0 сом"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Две кнопки: Отменить и Подтвердить -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical">
+        android:weightSum="2">
 
-        <TextView
-            android:id="@+id/tvTotalSum"
+        <Button
+            android:id="@+id/btnCancelOrder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Итого: 0 Сом"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:text="Отменить"/>
 
         <Button
-            android:id="@+id/btnSaveOrder"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnConfirmOrder"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Сохранить"/>
+            android:layout_weight="1"
+            android:text="Подтвердить заказ"/>
     </LinearLayout>
 </LinearLayout>
