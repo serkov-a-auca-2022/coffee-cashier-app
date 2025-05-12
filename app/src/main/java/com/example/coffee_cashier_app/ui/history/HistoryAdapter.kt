@@ -6,44 +6,41 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.coffee_cashier_app.R
-import com.example.coffee_cashier_app.model.Order
+import com.example.coffee_cashier_app.model.OrderResponseDto
 
 class HistoryAdapter(
-    private var orders: List<Order> = emptyList(),
-    // Добавим лямбду для обработки нажатия (если нужно, можно оставить пустой)
-    private val onOrderClick: (Order) -> Unit = {}
+    private var orders: List<OrderResponseDto>,
+    private val onOrderClick: (OrderResponseDto) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
 
-    inner class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textDate: TextView = itemView.findViewById(R.id.textDateTime)
-        val textComposition: TextView = itemView.findViewById(R.id.textItemsSummary)
-        val textSum: TextView = itemView.findViewById(R.id.textSum)
-        // Если в макете item_order.xml у вас уже есть поле для статуса, можно добавить его сюда
-        // val textStatus: TextView = itemView.findViewById(R.id.textStatus)
+    fun updateOrders(newOrders: List<OrderResponseDto>) {
+        orders = newOrders
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_order, parent, false)
+            .inflate(R.layout.item_order_history, parent, false)
         return HistoryViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         val order = orders[position]
-        holder.textDate.text = order.dateTime
-        // Формируем состав заказа, например: "Americano x1, Latte x2"
-        val composition = order.items.joinToString(separator = ", ") { "${it.item.name} x${it.quantity}" }
-        holder.textComposition.text = composition
-        holder.textSum.text = "Сумма: ${order.total} сом"
-        // Если хотите обрабатывать нажатие на заказ:
+        holder.textOrderNumber.text = "Заказ №${order.orderId}"
+        holder.textOrderDate.text   = order.orderDate
+        holder.textOrderStatus.text = when (order.status) {
+            "FINISHED"  -> "Завершён"
+            "CANCELLED" -> "Отменён"
+            else        -> order.status
+        }
         holder.itemView.setOnClickListener { onOrderClick(order) }
     }
 
     override fun getItemCount(): Int = orders.size
 
-    // Функция для обновления списка заказов
-    fun updateList(newList: List<Order>) {
-        orders = newList
-        notifyDataSetChanged()
+    inner class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textOrderNumber: TextView = itemView.findViewById(R.id.textOrderNumber)
+        val textOrderDate:   TextView = itemView.findViewById(R.id.textOrderDate)
+        val textOrderStatus: TextView = itemView.findViewById(R.id.textOrderStatus)
     }
 }

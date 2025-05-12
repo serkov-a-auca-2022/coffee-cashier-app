@@ -1,205 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Номер заказа -->
+    <TextView
+        android:id="@+id/textOrderNumber"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:textStyle="bold"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Дата и время заказа -->
-        <TextView
-            android:id="@+id/textDateTime"
-            android:layout_width="match_parent"
+    <!-- Дата и время -->
+    <TextView
+        android:id="@+id/textDateTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/textOrderNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Сумма -->
+    <TextView
+        android:id="@+id/textSumDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/textDateTime"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Инфо по пользователю -->
+    <TextView
+        android:id="@+id/textUserInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/textSumDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Баллы -->
+    <TextView
+        android:id="@+id/textPoints"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Баллы: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textUserInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Бесплатные напитки -->
+    <TextView
+        android:id="@+id/textFreeDrinks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Бесплатные напитки: 0"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textPoints"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Ручной ввод (скроем в коде) -->
+    <EditText
+        android:id="@+id/editQrManual"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Введите номер QR"
+        android:inputType="text"
+        app:layout_constraintTop_toBottomOf="@id/textFreeDrinks"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Кнопка «Ввести» (скроем в коде) -->
+    <Button
+        android:id="@+id/btnEnterQr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Ввести"
+        app:layout_constraintTop_toBottomOf="@id/editQrManual"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Список позиций заказа -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerOrderItems"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/btnEnterQr"
+        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Панель кнопок -->
+    <LinearLayout
+        android:id="@+id/buttonPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnScanQr"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Дата заказа: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:text="Скан QR"/>
 
-        <!-- Состав заказа -->
-        <TextView
-            android:id="@+id/textItemsSummary"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnCompleteOrder"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Состав заказа: "
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginStart="16dp"
+            android:text="Завершить"/>
 
-        <!-- Итоговая сумма -->
-        <TextView
-            android:id="@+id/textTotal"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnCancelOrder"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="К оплате: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
-        <!-- Состав заказа -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Состав заказа:"
-            android:textStyle="bold"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textOrderItems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="–"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Сумма заказа -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Сумма:"
-            android:textStyle="bold"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textSumDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="0 сом"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Ввод QR-кода и кнопка сканирования -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <EditText
-                android:id="@+id/editTextQrCode"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="QR-код"
-                android:inputType="text"
-                android:maxLines="1"/>
-
-            <Button
-                android:id="@+id/btnScanQr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Сканировать"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
-
-        <!-- Информация о пользователе -->
-        <TextView
-            android:id="@+id/textUserInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Пользователь: не сканирован"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Управление бонусными баллами -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Бонусные баллы:"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/btnPointsMinus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="−"
-                android:layout_marginStart="8dp"/>
-
-            <TextView
-                android:id="@+id/textPoints"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginHorizontal="4dp"/>
-
-            <Button
-                android:id="@+id/btnPointsPlus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="＋"/>
-        </LinearLayout>
-
-        <!-- Управление бесплатными напитками -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Бесплатные напитки:"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/btnDrinksMinus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="−"
-                android:layout_marginStart="8dp"/>
-
-            <TextView
-                android:id="@+id/textDrinks"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginHorizontal="4dp"/>
-
-            <Button
-                android:id="@+id/btnDrinksPlus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="＋"/>
-        </LinearLayout>
-
-        <!-- Кнопки Завершить и Отменить -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
-
-            <Button
-                android:id="@+id/btnCompleteOrder"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Завершить"/>
-
-            <Button
-                android:id="@+id/btnCancelOrder"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Отменить"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
-
+            android:layout_marginStart="16dp"
+            android:text="Отменить"/>
     </LinearLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

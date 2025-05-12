@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+    android:layout_height="match_parent">
 
-    <!-- Выпадающий список для фильтрации истории -->
-    <Spinner
-        android:id="@+id/spinnerFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/spinner_prompt"
-        android:entries="@array/history_filter_options"
-        android:layout_marginBottom="8dp"/>
-
-    <!-- Список исторических заказов -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHistory"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="4dp"/>
-</LinearLayout>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

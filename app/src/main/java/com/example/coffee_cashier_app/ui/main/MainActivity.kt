@@ -22,13 +22,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ordersAdapter = OrdersAdapter { order ->
+        ordersAdapter = OrdersAdapter(emptyList()) { order ->
             val intent = Intent(this, OrderDetailActivity::class.java)
             intent.putExtra("order", order)
             startActivity(intent)
         }
+
         binding.recyclerOrders.layoutManager = LinearLayoutManager(this)
-        binding.recyclerOrders.adapter = ordersAdapter
+        binding.recyclerOrders.adapter    = ordersAdapter
 
         binding.buttonCreateOrder.setOnClickListener {
             startActivity(Intent(this, CreateOrderActivity::class.java))
@@ -38,12 +39,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainViewModel.ordersLiveData.observe(this) { ordersList ->
-            ordersAdapter.setOrders(ordersList)
+            ordersAdapter.updateOrders(ordersList)
         }
         mainViewModel.loadingLiveData.observe(this) { isLoading ->
-            binding.progressLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.progressLoading.visibility =
+                if (isLoading) View.VISIBLE else View.GONE
         }
 
+        // первый загруз
+        mainViewModel.loadOrders()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // при возвращении сюда — обновляем список
         mainViewModel.loadOrders()
     }
 }

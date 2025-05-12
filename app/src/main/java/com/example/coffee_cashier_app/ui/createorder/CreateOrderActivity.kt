@@ -1,4 +1,3 @@
-// CreateOrderActivity.kt
 package com.example.coffee_cashier_app.ui.createorder
 
 import android.content.Intent
@@ -23,11 +22,10 @@ class CreateOrderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateOrderBinding
     private val cart = mutableMapOf<Item, Int>()
 
-    // 1) создаём локальный adapter и захватываем его в лямбду
     private val cartAdapter: CartAdapter by lazy {
         CartAdapter(cart) { item, newQty ->
             if (newQty <= 0) cart.remove(item)
-            else             cart[item] = newQty
+            else            cart[item] = newQty
             cartAdapter.notifyDataSetChanged()
             updateTotal()
             updateConfirmState()
@@ -38,26 +36,24 @@ class CreateOrderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateOrderBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // RecyclerView’ы
+        // инициализируем списки
         binding.rvCategories.layoutManager = LinearLayoutManager(this)
         binding.rvProducts.layoutManager   = LinearLayoutManager(this)
         binding.rvCart.layoutManager       = LinearLayoutManager(this)
         binding.rvProducts.visibility      = View.GONE
-
-        // 2) сразу навешиваем наш adapter
-        binding.rvCart.adapter = cartAdapter
+        binding.rvCart.adapter             = cartAdapter
         updateConfirmState()
 
-        // Загрузка категорий и товаров
+        // грузим товары и категории
         lifecycleScope.launch {
-            val all = ProductRepository.getAll()
+            val all   = ProductRepository.getAll()
             val byCat = all.groupBy { it.category }
-            val cats = byCat.keys.map { Category(it) }
+            val cats  = byCat.keys.map { Category(it) }
 
-            val catAdapter = CategoryAdapter(cats) { cat ->
+            binding.rvCategories.adapter = CategoryAdapter(cats) { cat ->
+                // при выборе категории показываем список товаров
                 binding.rvCategories.visibility = View.GONE
                 binding.rvProducts.visibility   = View.VISIBLE
 
@@ -68,31 +64,36 @@ class CreateOrderActivity : AppCompatActivity() {
                     updateTotal()
                     updateConfirmState()
                 }
+
                 binding.rvProducts.adapter = prodAdapter
                 prodAdapter.submitList(byCat[cat.name]!!)
             }
-            binding.rvCategories.adapter = catAdapter
         }
 
-        // Отмена
+        // отмена заказа (возвращаемся на главный экран)
         binding.btnCancelOrder.setOnClickListener { finish() }
 
-        // Подтвердить (POST /api/orders)
+        // подтверждение заказа
         binding.btnConfirmOrder.setOnClickListener {
-            binding.btnConfirmOrder.isEnabled = false
+            binding.btnConfirmOrder.isEnabled   = false
             binding.progressCreating.visibility = View.VISIBLE
 
             lifecycleScope.launch {
                 try {
-                    // мапим на DTO
                     val itemsDto = cart.map { (item, qty) ->
-                        OrderItemDto(productId = item.id.toInt(), quantity = qty)
+                        OrderItemDto(
+                            productId = item.id.toLong(),  // Long!
+                            quantity  = qty
+                        )
                     }
                     OrderRepository.createOrder(itemsDto)
-                    startActivity(Intent(this@CreateOrderActivity, MainActivity::class.java))
+                    startActivity(
+                        Intent(this@CreateOrderActivity, MainActivity::class.java)
+                    )
                     finish()
                 } catch (e: Exception) {
-                    Toast.makeText(this@CreateOrderActivity,
+                    Toast.makeText(
+                        this@CreateOrderActivity,
                         "Ошибка создания заказа: ${e.localizedMessage}",
                         Toast.LENGTH_LONG
                     ).show()
@@ -116,9 +117,12 @@ class CreateOrderActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) =
         if (item.itemId == android.R.id.home) {
             if (binding.rvProducts.visibility == View.VISIBLE) {
+                // вернуться к выбору категории, не закрывая экран
                 binding.rvProducts.visibility   = View.GONE
                 binding.rvCategories.visibility = View.VISIBLE
-            } else finish()
+            } else {
+                finish()
+            }
             true
         } else super.onOptionsItemSelected(item)
 }

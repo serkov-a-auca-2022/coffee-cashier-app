@@ -6,21 +6,19 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <!-- 1) Список категорий -->
+    <!-- Категории -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategories"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"/>
+        android:layout_height="wrap_content"/>
 
-    <!-- 2) Список продуктов (скрыт до выбора категории) -->
+    <!-- Продукты -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <!-- 3) Корзина -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +32,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!-- Прогресс-бар при отправке -->
     <ProgressBar
         android:id="@+id/progressCreating"
         android:layout_width="wrap_content"
@@ -43,16 +40,13 @@
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Итог -->
     <TextView
         android:id="@+id/tvTotalSum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Итого: 0 сом"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Две кнопки: Отменить и Подтвердить -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

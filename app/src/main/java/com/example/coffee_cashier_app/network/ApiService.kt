@@ -3,11 +3,12 @@ package com.example.coffee_cashier_app.network
 
 import com.example.coffee_cashier_app.model.Item
 import com.example.coffee_cashier_app.model.OrderResponseDto
-import com.example.coffee_cashier_app.model.User
+import com.example.coffee_cashier_app.model.UserResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 data class LoginRequest(val username: String, val password: String)
@@ -46,15 +47,15 @@ interface ApiService {
     @POST("orders")
     suspend fun createOrder(@Body request: CreateOrderRequest): OrderResponseDto
 
-    // завершить заказ (POST /orders/{id}/finish)
-    @POST("orders/{id}/finish")
+    // завершить заказ (PUT /orders/{id}/finish)
+    @PUT("orders/{id}/finish")
     suspend fun finishOrder(@Path("id") orderId: Int): OrderResponseDto
 
-    // отменить заказ (POST /orders/{id}/cancel)
-    @POST("orders/{id}/cancel")
+    // отменить заказ (PUT /orders/{id}/cancel)
+    @PUT("orders/{id}/cancel")
     suspend fun cancelOrder(@Path("id") orderId: Int): OrderResponseDto
 
     // привязать клиента по QR
     @GET("users/qr/{qrCode}")
-    suspend fun getUserByQr(@Path("qrCode") qr: String): User
+    suspend fun getUserByQr(@Path("qrCode") qr: String): UserResponseDto
 }

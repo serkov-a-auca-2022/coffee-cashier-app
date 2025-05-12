@@ -15,9 +15,8 @@
         <TextView
             android:id="@+id/textDateTime"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="01.01.2025"
+            android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"/>
 
@@ -25,7 +24,6 @@
             android:id="@+id/textStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="в процессе"
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginStart="8dp"/>
@@ -36,7 +34,6 @@
         android:id="@+id/textItemsSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Americano x1, Latte x2"
         android:textSize="16sp"
         android:layout_marginTop="4dp"/>
 
@@ -45,8 +42,7 @@
         android:id="@+id/textSum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Сумма: 0 ₽"
-        android:textSize="16sp"
         android:gravity="end"
+        android:textSize="16sp"
         android:layout_marginTop="4dp"/>
 </LinearLayout>
