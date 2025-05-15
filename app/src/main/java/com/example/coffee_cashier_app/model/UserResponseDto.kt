@@ -1,5 +1,6 @@
 package com.example.coffee_cashier_app.model
 
+import java.io.Serializable
 
 data class UserResponseDto(
     val id: Long,
@@ -7,4 +8,4 @@ data class UserResponseDto(
     val lastName: String?,
     val points: Double,
     val freeDrinks: Int
-)
+) : Serializable

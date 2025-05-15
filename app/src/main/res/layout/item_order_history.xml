@@ -25,4 +25,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@android:color/holo_green_dark"/>
+
+    <!-- Новый элемент для отображения привязанного пользователя -->
+    <TextView
+        android:id="@+id/textUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textStyle="italic"
+        android:textColor="@android:color/darker_gray"
+        android:text="Пользователь"/>
+
 </LinearLayout>

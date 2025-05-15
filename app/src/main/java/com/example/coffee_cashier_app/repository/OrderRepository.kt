@@ -29,4 +29,8 @@ object OrderRepository {
     /**  Теперь возвращаем ваш DTO  */
     suspend fun getUserByQr(qrCode: String): UserResponseDto =
         api.getUserByQr(qrCode)
+
+    suspend fun assignUser(orderId: Int, userId: Long): OrderResponseDto =
+        api.assignUser(orderId, userId)
+
 }

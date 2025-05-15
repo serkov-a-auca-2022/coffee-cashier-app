@@ -26,13 +26,20 @@ class HistoryAdapter(
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         val order = orders[position]
+
         holder.textOrderNumber.text = "Заказ №${order.orderId}"
-        holder.textOrderDate.text   = order.orderDate
+        holder.textOrderDate  .text = order.orderDate
         holder.textOrderStatus.text = when (order.status) {
             "FINISHED"  -> "Завершён"
             "CANCELLED" -> "Отменён"
             else        -> order.status
         }
+
+        // выводим имя клиента или "Гость"
+        holder.textUserName.text = order.user
+            ?.let { "${it.firstName.orEmpty()} ${it.lastName.orEmpty()}" }
+            ?: "Гость"
+
         holder.itemView.setOnClickListener { onOrderClick(order) }
     }
 
@@ -42,5 +49,6 @@ class HistoryAdapter(
         val textOrderNumber: TextView = itemView.findViewById(R.id.textOrderNumber)
         val textOrderDate:   TextView = itemView.findViewById(R.id.textOrderDate)
         val textOrderStatus: TextView = itemView.findViewById(R.id.textOrderStatus)
+        val textUserName:    TextView = itemView.findViewById(R.id.textUserName)  // <— новый
     }
 }

@@ -8,7 +8,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.coffee_cashier_app.databinding.ActivityOrderDetailBinding
 import com.example.coffee_cashier_app.model.OrderResponseDto
-import com.example.coffee_cashier_app.model.UserResponseDto
 import com.example.coffee_cashier_app.repository.OrderRepository
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -113,15 +112,19 @@ class OrderDetailActivity : AppCompatActivity() {
     private fun loadUserInfo(qr: String) {
         lifecycleScope.launch {
             try {
-                val user: UserResponseDto = OrderRepository.getUserByQr(qr)
-                val fullName = listOfNotNull(user.firstName, user.lastName)
-                    .joinToString(" ")
+                // 1) получаем пользователя по QR
+                val user = OrderRepository.getUserByQr(qr)
+                // 2) ассоциируем его с текущим заказом на бэке
+                currentOrder = OrderRepository.assignUser(
+                    currentOrder!!.orderId.toInt(), user.id
+                )
+                // 3) обновляем UI
+                val fullName = listOfNotNull(user.firstName, user.lastName).joinToString(" ")
                 binding.textUserInfo.text   = "Пользователь: $fullName"
                 binding.textPoints.text     = "Баллы: ${user.points}"
                 binding.textFreeDrinks.text = "Бесплатные напитки: ${user.freeDrinks}"
             } catch (e: Exception) {
-                Toast.makeText(this@OrderDetailActivity,
-                    "Пользователь не найден", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@OrderDetailActivity, "Пользователь не найден", Toast.LENGTH_LONG).show()
             }
         }
     }

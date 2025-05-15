@@ -58,4 +58,12 @@ interface ApiService {
     // привязать клиента по QR
     @GET("users/qr/{qrCode}")
     suspend fun getUserByQr(@Path("qrCode") qr: String): UserResponseDto
+
+    // привязать пользователя к заказу
+    @PUT("orders/{orderId}/assign/{userId}")
+    suspend fun assignUser(
+        @Path("orderId") orderId: Int,
+        @Path("userId")  userId:   Long
+    ): OrderResponseDto
+
 }
