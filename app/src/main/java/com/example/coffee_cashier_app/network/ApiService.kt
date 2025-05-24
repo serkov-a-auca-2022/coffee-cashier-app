@@ -51,6 +51,12 @@ interface ApiService {
     @PUT("orders/{id}/finish")
     suspend fun finishOrder(@Path("id") orderId: Int): OrderResponseDto
 
+
+    @POST("orders/checkout")
+    suspend fun checkout(
+        @Body request: CheckoutRequest
+    ): OrderResponseDto
+
     // отменить заказ (PUT /orders/{id}/cancel)
     @PUT("orders/{id}/cancel")
     suspend fun cancelOrder(@Path("id") orderId: Int): OrderResponseDto

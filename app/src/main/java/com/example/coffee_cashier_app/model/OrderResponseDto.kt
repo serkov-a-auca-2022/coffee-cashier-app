@@ -13,5 +13,6 @@ data class OrderResponseDto(
     val freeDrinkUsed: Boolean,
     val status: String,
     val items: List<OrderItemResponseDto>,
-    val user: UserResponseDto?
+    val user: UserResponseDto?,
+    val freeDrinksUsedCount: Int
 ) : Serializable

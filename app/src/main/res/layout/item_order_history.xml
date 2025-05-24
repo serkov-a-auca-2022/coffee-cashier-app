@@ -36,4 +36,34 @@
         android:textColor="@android:color/darker_gray"
         android:text="Пользователь"/>
 
+    <!-- Зачёркнутая оригинальная сумма -->
+    <TextView
+        android:id="@+id/textOriginalSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#888"/>
+
+    <!-- Итоговая сумма после скидок -->
+    <TextView
+        android:id="@+id/textFinalSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Сколько баллов списано -->
+    <TextView
+        android:id="@+id/textPointsUsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"/>
+
+    <!-- Сколько бесплатных напитков списано -->
+    <TextView
+        android:id="@+id/textFreeUsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"/>
+
 </LinearLayout>

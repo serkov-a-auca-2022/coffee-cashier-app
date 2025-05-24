@@ -2,12 +2,14 @@ package com.example.coffee_cashier_app.ui.orderdetail
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.coffee_cashier_app.databinding.ActivityOrderDetailBinding
 import com.example.coffee_cashier_app.model.OrderResponseDto
+import com.example.coffee_cashier_app.model.UserResponseDto
 import com.example.coffee_cashier_app.repository.OrderRepository
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -18,6 +20,11 @@ class OrderDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOrderDetailBinding
     private var currentOrder: OrderResponseDto? = null
+
+    // Для списания бонусов
+    private var freeUsed = 0
+    private var freeMax = 0
+    private var pointsMax = 0
 
     private val scanLauncher = registerForActivityResult(ScanContract()) { result: ScanIntentResult? ->
         result?.contents?.let { qr ->
@@ -31,42 +38,33 @@ class OrderDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // 1) Получаем заказ из intent и показываем позиции
         currentOrder = intent.getSerializableExtra("order") as? OrderResponseDto
-        if (currentOrder == null) {
-            Toast.makeText(this, "Ошибка: заказ не передан", Toast.LENGTH_LONG).show()
-            finish()
-            return
+        binding.recyclerOrderItems.layoutManager = LinearLayoutManager(this)
+        binding.recyclerOrderItems.adapter =
+            OrderItemsAdapter(currentOrder?.items ?: emptyList())
+        binding.textOrderNumber.text = "Заказ №${currentOrder?.orderId}"
+        binding.textSumDetail.text   = "Сумма: ${currentOrder?.totalAmount}"
+
+        // 2) Скрываем блок списания бонусов
+        binding.loyaltyControls.visibility = View.GONE
+
+        // 3) Если предзаказ пришёл с привязанным юзером — сразу показываем лояльти-блок
+        currentOrder?.user?.let { user ->
+            showLoyaltyControls(user, currentOrder!!)
         }
 
+        // 4) Кнопка «Ввести» QR вручную
         binding.btnEnterQr.setOnClickListener {
-            val qr = binding.editQrManual.text.toString().trim()
-            if (qr.isNotEmpty()) loadUserInfo(qr)
-            else Toast.makeText(this, "Введите номер QR", Toast.LENGTH_SHORT).show()
-        }
-
-
-        // Заполняем детали заказа
-        currentOrder!!.let { order ->
-            binding.textOrderNumber.text = "Заказ №${order.orderId}"
-            binding.textDateTime  .text = order.orderDate
-            binding.textSumDetail .text = "${order.finalAmount} сом"
-
-            binding.recyclerOrderItems.layoutManager = LinearLayoutManager(this)
-            binding.recyclerOrderItems.adapter       = OrderItemsAdapter(order.items)
-
-            // Если сервер сразу вернул клиента в поле order.user — показываем сразу
-            order.user?.let { user ->
-                val fullName = listOfNotNull(user.firstName, user.lastName)
-                    .joinToString(" ")
-                binding.textUserInfo.text   = "Пользователь: $fullName"
-                binding.textPoints.text     = "Баллы: ${user.points}"
-                binding.textFreeDrinks.text = "Бесплатные напитки: ${user.freeDrinks}"
-                // и можно скрыть кнопку сканирования, если хотите:
-                // binding.btnScanQr.visibility = View.GONE
+            val qrText = binding.editQrManual.text.toString().trim()
+            if (qrText.isEmpty()) {
+                Toast.makeText(this, "Введите код QR", Toast.LENGTH_SHORT).show()
+            } else {
+                loadUserInfo(qrText)
             }
         }
 
-        // Кнопка сканирования QR
+        // 5) Кнопка «Сканировать QR»
         binding.btnScanQr.setOnClickListener {
             val options = ScanOptions().apply {
                 setPrompt("Наведите камеру на QR-код")
@@ -76,24 +74,65 @@ class OrderDetailActivity : AppCompatActivity() {
             scanLauncher.launch(options)
         }
 
-        // Завершить
+        // 6) Кнопки +/– бесплатных напитков
+        binding.btnPlusFree.setOnClickListener {
+            if (freeUsed < freeMax) {
+                freeUsed++
+                binding.tvFreeCount.text = freeUsed.toString()
+            } else {
+                Toast.makeText(this, "Не больше $freeMax", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.btnMinusFree.setOnClickListener {
+            if (freeUsed > 0) {
+                freeUsed--
+                binding.tvFreeCount.text = freeUsed.toString()
+            }
+        }
+
+        // 7) «Завершить» с учётом бонусов
         binding.btnCompleteOrder.setOnClickListener {
             binding.btnCompleteOrder.isEnabled = false
+            val ptsToUse = binding.etPoints.text.toString().toIntOrNull() ?: 0
+
             lifecycleScope.launch {
                 try {
-                    OrderRepository.finishOrder(currentOrder!!.orderId.toInt())
-                    Toast.makeText(this@OrderDetailActivity,
-                        "Заказ завершён", Toast.LENGTH_SHORT).show()
+                    // вызываем нужный endpoint
+                    val updatedOrder = if (freeUsed > 0 || ptsToUse > 0) {
+                        OrderRepository.checkoutWithRewards(
+                            currentOrder!!.orderId.toInt(),
+                            freeUsed,
+                            ptsToUse
+                        )
+                    } else {
+                        OrderRepository.finishOrder(currentOrder!!.orderId.toInt())
+                    }
+
+                    // 8) Обновляем UI под новый заказ
+                    currentOrder = updatedOrder
+                    binding.textSumDetail.text   = "Итог: ${updatedOrder.finalAmount}"
+                    binding.textPoints.text      = "Баллы: ${updatedOrder.user?.points}"
+                    binding.textFreeDrinks.text  = "Бесплатные напитки: ${updatedOrder.user?.freeDrinks}"
+
+                    Toast.makeText(
+                        this@OrderDetailActivity,
+                        "Заказ №${updatedOrder.orderId} завершён",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     finish()
+
                 } catch (e: Exception) {
-                    Toast.makeText(this@OrderDetailActivity,
-                        "Ошибка: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                     binding.btnCompleteOrder.isEnabled = true
+                    Toast.makeText(
+                        this@OrderDetailActivity,
+                        "Ошибка: ${e.localizedMessage}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
 
-        // Отменить
+        // 9) Отмена заказа
         binding.btnCancelOrder.setOnClickListener {
             lifecycleScope.launch {
                 try {
@@ -109,24 +148,46 @@ class OrderDetailActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Получаем пользователя по QR и привязываем его к заказу, затем показываем лояльти-блок
+     */
     private fun loadUserInfo(qr: String) {
         lifecycleScope.launch {
             try {
-                // 1) получаем пользователя по QR
                 val user = OrderRepository.getUserByQr(qr)
-                // 2) ассоциируем его с текущим заказом на бэке
                 currentOrder = OrderRepository.assignUser(
-                    currentOrder!!.orderId.toInt(), user.id
+                    currentOrder!!.orderId.toInt(),
+                    user.id
                 )
-                // 3) обновляем UI
-                val fullName = listOfNotNull(user.firstName, user.lastName).joinToString(" ")
-                binding.textUserInfo.text   = "Пользователь: $fullName"
-                binding.textPoints.text     = "Баллы: ${user.points}"
-                binding.textFreeDrinks.text = "Бесплатные напитки: ${user.freeDrinks}"
+                showLoyaltyControls(user, currentOrder!!)
             } catch (e: Exception) {
-                Toast.makeText(this@OrderDetailActivity, "Пользователь не найден", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@OrderDetailActivity,
+                    "Пользователь не найден", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    /**
+     * Инициализация блока списания бонусов
+     */
+    private fun showLoyaltyControls(user: UserResponseDto, order: OrderResponseDto) {
+        // Обновляем данные пользователя
+        val fullName = listOfNotNull(user.firstName, user.lastName).joinToString(" ")
+        binding.textUserInfo.text    = "Пользователь: $fullName"
+        binding.textPoints.text      = "Баллы: ${user.points}"
+        binding.textFreeDrinks.text  = "Бесплатные напитки: ${user.freeDrinks}"
+
+        // Считаем, сколько напитков в заказе (по количеству)
+        val drinksInOrder = order.items.sumOf { it.quantity }
+        freeMax   = minOf(user.freeDrinks, drinksInOrder)
+        pointsMax = minOf(user.points.toInt(), order.finalAmount.toInt())
+
+        // Сбрасываем счётчики
+        freeUsed = 0
+        binding.tvFreeCount.text = "0"
+        binding.etPoints.hint    = "Макс $pointsMax"
+
+        binding.loyaltyControls.visibility = View.VISIBLE
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
